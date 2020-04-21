@@ -1,4 +1,3 @@
-
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -65,3 +64,5 @@ target/
 
 # pyenv
 .python-version
+
+tags
