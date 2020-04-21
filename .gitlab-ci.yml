@@ -1,0 +1,10 @@
+stages:
+  test
+
+before_script:
+  - "pip install requirements.txt"
+
+test:
+  image: python:3.8
+  script:
+    - "pytest"
