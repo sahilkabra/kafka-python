@@ -68,3 +68,4 @@ target/
 tags
 .vim
 .mypy*
+.env
