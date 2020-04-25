@@ -14,8 +14,7 @@ class Producer:
                                       ssl_certfile=cert_path,
                                       ssl_keyfile=key_path)
 
-    def produce(self, topic: str, dataProducer):
-        data = dataProducer.produce()
+    def publish(self, topic: str, data):
 
         if (data != None):
             message = "Sending message {}".format(data)

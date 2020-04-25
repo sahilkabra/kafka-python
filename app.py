@@ -18,17 +18,17 @@ def main():
         for k, v in vars(args).items() if k not in ("producer", "consumer")
     }
 
-    run(args.producer, **kwargs)
+    run("produce" if args.producer else "consume", **kwargs)
 
 
-def run(runProducer: bool, service_uri: str, ca_path: str, cert_path: str,
+def run(operation: str, service_uri: str, ca_path: str, cert_path: str,
         key_path: str, topic: str):
-    if runProducer:
+    if operation == "produce":
         producer = Producer(service_uri, ca_path, cert_path, key_path)
 
         logger.info("Producing message on topic {topic}".format(topic=topic))
-        producer.produce(topic, RandomNumberProducer)
-    else:
+        producer.publish(topic, RandomNumberProducer.produce())
+    elif operation == "consume":
         consumer = Consumer(service_uri, ca_path, cert_path, key_path)
 
         logger.info("Consuming message on topic {topic}".format(topic=topic))
