@@ -5,7 +5,7 @@ import sys
 
 from common.consume import Consumer
 from common.produce import Producer
-from config import kafkaConfig, sitesConfig
+from config import kafka_config, sites_config
 from random_number import RandomNumberConsumer, RandomNumberProducer
 from site_status import check
 
@@ -20,7 +20,7 @@ def main():
 
 
 def run(operation: str):
-    topic = kafkaConfig["topic"]
+    topic = kafka_config["topic"]
 
     if operation == "produce":
         producer = Producer()
@@ -38,7 +38,7 @@ def run(operation: str):
         producer = Producer()
 
         logger.info("checking site availablity")
-        for site in sitesConfig:
+        for site in sites_config:
             result = check.check_site(site["url"], site["regex"]).to_json()
             producer.publish(topic, result)
     else:
