@@ -3,7 +3,7 @@ from typing import Optional
 import httpretty
 import pytest
 
-from site_status.check import check_site
+from .check import check_site
 
 uri = "http://test.example.com"
 

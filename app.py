@@ -5,8 +5,9 @@ import sys
 
 from common.consume import Consumer
 from common.produce import Producer
-from config import kafkaConfig
+from config import kafkaConfig, sitesConfig
 from random_number import RandomNumberConsumer, RandomNumberProducer
+from site_status import check
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -15,7 +16,7 @@ logger = logging.getLogger(__name__)
 def main():
     args = getArgs()
 
-    run("produce" if args.producer else "consume")
+    run(args.operation)
 
 
 def run(operation: str):
@@ -33,6 +34,13 @@ def run(operation: str):
         logger.info("Consuming message on topic {topic}".format(topic=topic))
         signal.signal(signal.SIGINT, close(consumer))
         consumer.consume(topic, RandomNumberConsumer)
+    elif operation == "check_site":
+        producer = Producer()
+
+        logger.info("checking site availablity")
+        for site in sitesConfig:
+            result = check.check_site(site, "").to_json()
+            producer.publish(topic, result)
 
 
 def close(instance):
@@ -49,14 +57,9 @@ def getArgs():
         description="Sample project to publish and consume messages with Kafka"
     )
 
-    parser.add_argument("--producer",
-                        action="store_true",
-                        default=False,
-                        help="run the producer")
-    parser.add_argument("--consumer",
-                        action="store_true",
-                        default=False,
-                        help="run the consumer")
+    parser.add_argument(
+        "--operation",
+        help="operation to run. one of produce, consume, check_site")
 
     return parser.parse_args()
 

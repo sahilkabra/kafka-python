@@ -31,21 +31,24 @@ def check_site(url: str, pattern: str) -> CheckResponse:
                    message=status_message,
                    match=match_found))
 
-        return CheckResponse(status_code=status_code,
+        return CheckResponse(site_url=url,
+                             status_code=status_code,
                              status_message=status_message,
                              time_taken=time_taken,
                              regex_matched=match_found)
 
     except requests.Timeout as ex:
 
-        return CheckResponse(status_code=None,
+        return CheckResponse(site_url=url,
+                             status_code=None,
                              status_message="Timeout",
-                             time_taken=ex.response.elapsed.total_seconds,
+                             time_taken=None,
                              regex_matched=False)
 
     except requests.RequestException as ex:
 
         return CheckResponse(
+            site_url=url,
             status_code=ex.response.status_code if ex.response else None,
             status_message=str(ex.args[0]),
             time_taken=None,

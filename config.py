@@ -5,3 +5,8 @@ kafkaConfig = {
     "access_key": ".env/service.key",
     "topic": "sample-topic",
 }
+
+sitesConfig = [
+    "https://google.com.au", "https://simple-portfolio-manager.herokuapp.com/",
+    "http://somenonexistentsite"
+]

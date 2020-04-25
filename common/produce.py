@@ -16,11 +16,9 @@ class Producer:
                                       ssl_certfile=kafkaConfig["cert_path"],
                                       ssl_keyfile=kafkaConfig["access_key"])
 
-    def publish(self, topic: str, data):
-
+    def publish(self, topic: str, data: str):
         if (data != None):
-            message = "Sending message {}".format(data)
-            logger.info(message)
-            self.producer.send(topic, message.encode("utf-8"))
+            logger.info("Sending data {data}".format(data=data))
+            self.producer.send(topic, data.encode("utf-8"))
 
-        self.producer.flush()
+            self.producer.flush()
