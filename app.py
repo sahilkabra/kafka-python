@@ -27,7 +27,7 @@ def run(operation: str):
 
         logger.info("Producing message on topic {topic}".format(topic=topic))
 
-        producer.publish(topic, RandomNumberProducer.produce())
+        producer.publish(topic, str(RandomNumberProducer.produce()))
     elif operation == "consume":
         consumer = Consumer()
 
@@ -39,8 +39,11 @@ def run(operation: str):
 
         logger.info("checking site availablity")
         for site in sitesConfig:
-            result = check.check_site(site, "").to_json()
+            result = check.check_site(site["url"], site["regex"]).to_json()
             producer.publish(topic, result)
+    else:
+        logger.info("unknown operation")
+        sys.exit(1)
 
 
 def close(instance):

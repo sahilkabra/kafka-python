@@ -6,7 +6,13 @@ kafkaConfig = {
     "topic": "sample-topic",
 }
 
-sitesConfig = [
-    "https://google.com.au", "https://simple-portfolio-manager.herokuapp.com/",
-    "http://somenonexistentsite"
-]
+sitesConfig = [{
+    "url": "https://google.com.au",
+    "regex": "Google"
+}, {
+    "url": "https://simple-portfolio-manager.herokuapp.com/",
+    "regex": "hello"
+}, {
+    "url": "http://somenonexistentsite",
+    "regex": ""
+}]
