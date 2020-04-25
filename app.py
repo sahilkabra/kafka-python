@@ -5,6 +5,7 @@ import sys
 
 from common.consume import Consumer
 from common.produce import Producer
+from config import kafkaConfig
 from random_number import RandomNumberConsumer, RandomNumberProducer
 
 logging.basicConfig(level=logging.INFO)
@@ -13,23 +14,21 @@ logger = logging.getLogger(__name__)
 
 def main():
     args = getArgs()
-    kwargs = {
-        k: v
-        for k, v in vars(args).items() if k not in ("producer", "consumer")
-    }
 
-    run("produce" if args.producer else "consume", **kwargs)
+    run("produce" if args.producer else "consume")
 
 
-def run(operation: str, service_uri: str, ca_path: str, cert_path: str,
-        key_path: str, topic: str):
+def run(operation: str):
+    topic = kafkaConfig["topic"]
+
     if operation == "produce":
-        producer = Producer(service_uri, ca_path, cert_path, key_path)
+        producer = Producer()
 
         logger.info("Producing message on topic {topic}".format(topic=topic))
+
         producer.publish(topic, RandomNumberProducer.produce())
     elif operation == "consume":
-        consumer = Consumer(service_uri, ca_path, cert_path, key_path)
+        consumer = Consumer()
 
         logger.info("Consuming message on topic {topic}".format(topic=topic))
         signal.signal(signal.SIGINT, close(consumer))
@@ -50,17 +49,6 @@ def getArgs():
         description="Sample project to publish and consume messages with Kafka"
     )
 
-    parser.add_argument("--service-uri",
-                        required=True,
-                        help="URI for the running kafka instance(host:port)")
-    parser.add_argument("--ca-path", required=True, help="CA cerfificate path")
-    parser.add_argument("--cert-path",
-                        required=True,
-                        help="The Kafka certificate key path")
-    parser.add_argument("--key-path",
-                        required=True,
-                        help="The Kafka access key")
-    parser.add_argument("--topic", required=True, help="The Kafka topic")
     parser.add_argument("--producer",
                         action="store_true",
                         default=False,

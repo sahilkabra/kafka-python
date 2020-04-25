@@ -3,17 +3,18 @@ from typing import Protocol
 
 from kafka import KafkaProducer
 
+from config import kafkaConfig
+
 logger = logging.getLogger(__name__)
 
 
 class Producer:
-    def __init__(self, service_uri: str, ca_path: str, cert_path: str,
-                 key_path: str):
-        self.producer = KafkaProducer(bootstrap_servers=service_uri,
+    def __init__(self):
+        self.producer = KafkaProducer(bootstrap_servers=kafkaConfig["uri"],
                                       security_protocol="SSL",
-                                      ssl_cafile=ca_path,
-                                      ssl_certfile=cert_path,
-                                      ssl_keyfile=key_path)
+                                      ssl_cafile=kafkaConfig["ca_path"],
+                                      ssl_certfile=kafkaConfig["cert_path"],
+                                      ssl_keyfile=kafkaConfig["access_key"])
 
     def publish(self, topic: str, data):
 
