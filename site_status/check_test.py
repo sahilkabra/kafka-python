@@ -4,6 +4,7 @@ import httpretty
 import pytest
 
 from .check import check_site
+from .model import Site
 
 uri = "http://test.example.com"
 
@@ -47,7 +48,7 @@ def __test(expected_status_code: Optional[int],
            expected_message: str,
            regex: str = "",
            uri: str = uri):
-    response = check_site(uri, regex)
+    response = check_site(Site(url=uri, name="test"), regex)
 
     assert response.status_code == expected_status_code
     assert response.regex_matched == expected_regex_match

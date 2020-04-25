@@ -8,6 +8,8 @@ from common.produce import Producer
 from config import kafka_config, sites_config
 from random_number import RandomNumberConsumer, RandomNumberProducer
 from site_status import check
+from site_status.model import Site
+from site_status import check_process
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,6 +23,8 @@ def main():
 
 def run(operation: str):
     topic = kafka_config["topic"]
+
+    logger.info("running {operation}".format(operation=operation))
 
     if operation == "produce":
         producer = Producer()
@@ -39,8 +43,16 @@ def run(operation: str):
 
         logger.info("checking site availablity")
         for site in sites_config:
-            result = check.check_site(site["url"], site["regex"]).to_json()
+            result = check.check_site(Site(url=site["url"], name=site["name"]),
+                                      site["regex"]).to_json()
             producer.publish(topic, result)
+    elif operation == "consume_site":
+        consumer = Consumer()
+
+        logger.info(
+            "Consuming site message on topic {topic}".format(topic=topic))
+        signal.signal(signal.SIGINT, close(consumer))
+        consumer.consume(topic, check_process)
     else:
         logger.info("unknown operation")
         sys.exit(1)

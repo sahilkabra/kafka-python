@@ -7,20 +7,24 @@ kafka_config = {
 }
 
 sites_config = [{
+    "name": "google",
     "url": "https://google.com.au",
     "regex": "Google"
 }, {
+    "name": "pm",
     "url": "https://simple-portfolio-manager.herokuapp.com/",
     "regex": "hello"
 }, {
+    "name": "notexist",
     "url": "http://somenonexistentsite",
     "regex": ""
 }]
 
 database_config = {
     "host": "pg-kafkapython-sample-sahil-97de.aivencloud.com",
-    "port": 16094,
-    "user": "",
     "password": "",
+    "port": "16094",
+    "database": "defaultdb",
+    "user": "avnadmin",
     "cert_path": ".env/postgresql.pem"
 }

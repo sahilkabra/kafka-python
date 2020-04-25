@@ -3,15 +3,15 @@ import re
 
 import requests
 
-from .model import CheckResponse
+from .model import (CheckResponse, Site)
 
 logger = logging.getLogger(__name__)
 
 
-def check_site(url: str, pattern: str) -> CheckResponse:
+def check_site(site: Site, pattern: str) -> CheckResponse:
     try:
-        logger.info("checking {site} for availability".format(site=url))
-        response = requests.get(url, timeout=5)
+        logger.info("checking {site} for availability".format(site=site.url))
+        response = requests.get(site.url, timeout=5)
 
         status_code = response.status_code
         status_message = response.reason
@@ -26,12 +26,12 @@ def check_site(url: str, pattern: str) -> CheckResponse:
 
         logger.info(
             "{site}: status: {code} message: {message} regex_match: {match}".
-            format(site=url,
+            format(site=site.name,
                    code=status_code,
                    message=status_message,
                    match=match_found))
 
-        return CheckResponse(site_url=url,
+        return CheckResponse(site=site,
                              status_code=status_code,
                              status_message=status_message,
                              time_taken=time_taken,
@@ -39,7 +39,7 @@ def check_site(url: str, pattern: str) -> CheckResponse:
 
     except requests.Timeout as ex:
 
-        return CheckResponse(site_url=url,
+        return CheckResponse(site=site,
                              status_code=None,
                              status_message="Timeout",
                              time_taken=None,
@@ -48,7 +48,7 @@ def check_site(url: str, pattern: str) -> CheckResponse:
     except requests.RequestException as ex:
 
         return CheckResponse(
-            site_url=url,
+            site=site,
             status_code=ex.response.status_code if ex.response else None,
             status_message=str(ex.args[0]),
             time_taken=None,
