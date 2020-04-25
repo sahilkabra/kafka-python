@@ -1,7 +1,7 @@
 import pytest
 
-from common.produce import Producer
 from common.consume import Consumer
+from common.produce import Producer
 from random_number import RandomNumberProducer
 
 kafka_url = "kafka-kafkapython-sample-sahil-97de.aivencloud.com:16096"

@@ -1,5 +1,6 @@
-from kafka import KafkaConsumer
 import logging
+
+from kafka import KafkaConsumer
 
 logger = logging.getLogger(__name__)
 

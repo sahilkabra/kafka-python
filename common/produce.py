@@ -1,6 +1,7 @@
-from kafka import KafkaProducer
-from typing import Protocol
 import logging
+from typing import Protocol
+
+from kafka import KafkaProducer
 
 logger = logging.getLogger(__name__)
 

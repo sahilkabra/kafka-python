@@ -1,6 +1,7 @@
 from typing import Optional
-import pytest
+
 import httpretty
+import pytest
 
 from site_status.check import check_site
 

@@ -1,11 +1,11 @@
-import signal
-import sys
 import argparse
 import logging
+import signal
+import sys
 
-from common.produce import Producer
 from common.consume import Consumer
-from random_number import RandomNumberProducer, RandomNumberConsumer
+from common.produce import Producer
+from random_number import RandomNumberConsumer, RandomNumberProducer
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

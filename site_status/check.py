@@ -1,13 +1,14 @@
-from typing import Optional
-from dataclasses import dataclass
-import requests
-import re
 import logging
+import re
+
+import requests
+
+from .model import CheckResponse
 
 logger = logging.getLogger(__name__)
 
 
-def check_site(url: str, pattern: str):
+def check_site(url: str, pattern: str) -> CheckResponse:
     try:
         logger.info("checking {site} for availability".format(site=url))
         response = requests.get(url, timeout=5)
@@ -49,11 +50,3 @@ def check_site(url: str, pattern: str):
             status_message=str(ex.args[0]),
             time_taken=None,
             regex_matched=False)
-
-
-@dataclass
-class CheckResponse:
-    status_code: Optional[int]
-    time_taken: Optional[float]
-    regex_matched: bool = False
-    status_message: str = ""
