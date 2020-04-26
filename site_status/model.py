@@ -41,3 +41,12 @@ class CheckEntity:
 @dataclass(frozen=True)
 class SiteCheckRecord(Site, CheckEntity):
     pass
+
+
+@dataclass(frozen=True)
+class DownTime:
+    to_time: datetime
+    from_time: datetime
+
+    def duration(self) -> float:
+        return (self.to_time - self.from_time).total_seconds()

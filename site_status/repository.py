@@ -18,7 +18,7 @@ FIND_LATEST_SITE_CHECK_QUERY = """
   from site_status ss
     inner join site s on s.id = ss.site_id
   where ss.site_id=%s
-  order by s.time desc
+  order by ss.time desc
   fetch first row only
 """
 FIND_SITE_CHECK_RECORDS_QUERY = """
@@ -28,6 +28,7 @@ FIND_SITE_CHECK_RECORDS_QUERY = """
   from site_status ss
     inner join site s on s.id = ss.site_id
   where s.name = %(name)s
+  order by ss.time desc
 """
 
 
