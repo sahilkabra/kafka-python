@@ -13,7 +13,10 @@ Uses Aiven's Postgresql and Kafka databases.
 The code can be run in the producer and the consumer modes.
 
 When run in the producer mode, it will check the status of the configured sites and send message to Kafka
-Crontab can be use to run the check periodically.
+
+Crontab can be used to run the check periodically. Benefits of using crontab:
+* No additional process running in the background.
+* Less memory usage and issues of memory leaks.
 
 When run in the consumer mode, it will block and listen for messages to process. Once a message is recieved,
 it will write the results to a Postgresql database and log the metrics for the site.
