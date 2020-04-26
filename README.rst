@@ -28,7 +28,8 @@ Dependencies
 -------------
 #. Ensure you have python 3.8 installed
 #. Needs an Aiven Kafka and Postgresql instance running
-#. Then install dependencies as below
+
+Then install dependencies as below
 ::
   pip install -r requirments.txt
 
