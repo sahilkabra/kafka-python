@@ -22,9 +22,9 @@ sites_config = [{
 
 database_config = {
     "host": "pg-kafkapython-sample-sahil-97de.aivencloud.com",
-    "password": "",
     "port": "16094",
     "database": "defaultdb",
-    "user": "avnadmin",
+    "user": "",
+    "password": "",
     "cert_path": ".env/postgresql.pem"
 }
