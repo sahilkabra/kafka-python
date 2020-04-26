@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 
 def consume(message: str):
-    logger.info("Received message {message}".format(message=message))
+    logger.info(f"Received message {message}")
     process(CheckResponse.from_json(message))
 
 
@@ -24,11 +24,12 @@ def process(response: CheckResponse):
                     connection, response.site.name, response.site.url)
 
             assert site_id is not None
-            logger.info("found site id {}".format(site_id))
+            logger.info(f"found site id {site_id}")
 
             response_time: Optional[int] = None
 
             if response.time_taken is not None:
+                # convert time taken to ms
                 response_time = round(response.time_taken * 1000)
 
             entity = CheckEntity(id=None,

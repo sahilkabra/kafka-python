@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import argparse
 import logging
 import signal
@@ -6,7 +8,6 @@ import sys
 from common.consume import Consumer
 from common.produce import Producer
 from config import kafka_config, sites_config
-from random_number import RandomNumberConsumer, RandomNumberProducer
 from site_status import check, check_process
 from site_status.metrics import log_metrics
 from site_status.model import Site
@@ -24,37 +25,26 @@ def main():
 def run(operation: str):
     topic = kafka_config["topic"]
 
-    logger.info("running {operation}".format(operation=operation))
+    logger.info(f"running {operation}")
 
-    if operation == "produce":
+    if operation == "check_site":
         producer = Producer()
 
-        logger.info("Producing message on topic {topic}".format(topic=topic))
-
-        producer.publish(topic, str(RandomNumberProducer.produce()))
-    elif operation == "consume":
-        consumer = Consumer()
-
-        logger.info("Consuming message on topic {topic}".format(topic=topic))
-        signal.signal(signal.SIGINT, close(consumer))
-        consumer.consume(topic, RandomNumberConsumer)
-    elif operation == "check_site":
-        producer = Producer()
-
-        logger.info("checking site availablity")
         for site in sites_config:
+            logger.info(f"checking availablity for {site}")
             result = check.check_site(Site(url=site["url"], name=site["name"]),
                                       site["regex"]).to_json()
             producer.publish(topic, result)
+
     elif operation == "consume_site":
         consumer = Consumer()
 
-        logger.info(
-            "Consuming site message on topic {topic}".format(topic=topic))
-        signal.signal(signal.SIGINT, close(consumer))
-        consumer.consume(topic, check_process)
-    elif operation == "log_metrics":
-        log_metrics("google")
+        logger.info(f"Consuming site message on topic {topic}")
+
+        signal.signal(signal.SIGINT,
+                      close(consumer))  # handle CTRL-C to stop consumer
+
+        consumer.consume(topic, check_process)  # blocking operation
     else:
         logger.info("unknown operation")
         sys.exit(1)

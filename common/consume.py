@@ -21,8 +21,8 @@ class Consumer:
         self.consumer.subscribe([topic])
 
         for message in self.consumer:
-            logger.info(
-                "received message {message}".format(message=message.offset))
+            logger.info(f"received message {message.offset}")
+
             dataConsumer.consume(message.value)
 
     def close(self):

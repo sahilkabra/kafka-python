@@ -15,7 +15,7 @@ class Site:
 class CheckResponse:
     site: Site
     status_code: Optional[int]
-    time_taken: Optional[float]
+    time_taken: Optional[float]  # in seconds
     regex_matched: bool = False
     status_message: str = ""
     date: datetime = datetime.now().astimezone()
@@ -35,7 +35,7 @@ class CheckEntity:
     check_time: datetime
     http_status_code: Optional[int]
     http_status_reason: str
-    response_time: Optional[int]
+    response_time: Optional[int]  # in milliseconds
 
 
 @dataclass

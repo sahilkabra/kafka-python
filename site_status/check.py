@@ -3,7 +3,7 @@ import re
 
 import requests
 
-from .model import (CheckResponse, Site)
+from .model import CheckResponse, Site
 
 logger = logging.getLogger(__name__)
 
@@ -25,11 +25,8 @@ def check_site(site: Site, pattern: str) -> CheckResponse:
         response.close()
 
         logger.info(
-            "{site}: status: {code} message: {message} regex_match: {match}".
-            format(site=site.name,
-                   code=status_code,
-                   message=status_message,
-                   match=match_found))
+            f"{site.name}: status: {status_code} message: {status_message} regex_match: {match_found}"
+        )
 
         return CheckResponse(site=site,
                              status_code=status_code,

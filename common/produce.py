@@ -18,7 +18,8 @@ class Producer:
 
     def publish(self, topic: str, data: str):
         if (data != None):
-            logger.info("Sending data {data}".format(data=data))
+            logger.info(f"Sending {data} to kafka topic {topic}")
+
             self.producer.send(topic, data.encode("utf-8"))
 
             self.producer.flush()
