@@ -9,10 +9,13 @@ now = datetime.now().astimezone()
 
 
 class TestDownTimeCalculation:
-    def test_should_return_empty_downtimes(self):
+    def test_should_return_empty_downtimes_when_site_is_always_available(self):
         site_check_records = _create_record_for_status_codes([200] * 10)
 
         assert get_down_times(site_check_records) == []
+
+    def test_should_return_empty_downtimes_when_no_record(self):
+        assert get_down_times([]) == []
 
     def test_should_return_duration_for_single_downtime(self):
         status_codes = ([200] * 5) + [503, 502, 404, None] + ([200] * 2)
@@ -75,6 +78,31 @@ class TestAvailabilityCalculation:
 
         assert availability == 96.43
 
+    def test_should_return_none_when_no_records(self):
+        assert calculate_availability([]) is None
+
+
+class TestResponseTimeCalculation:
+    def test_should_return_none_when_no_records(self):
+        assert calculate_avg_response_time([]) is None
+
+    def test_should_return_average_of_all_response_times(self):
+        site_check_records = [
+            _create_site_check_record(response_time=200),
+            _create_site_check_record(response_time=100)
+        ]
+
+        assert calculate_avg_response_time(site_check_records) == 150
+
+    def test_should_ignore_empty_response_times(self):
+        site_check_records = [
+            _create_site_check_record(response_time=200),
+            _create_site_check_record(response_time=100),
+            _create_site_check_record(response_time=None)
+        ]
+
+        assert calculate_avg_response_time(site_check_records) == 150
+
 
 def _create_record_for_status_codes(
         status_codes: List[int]) -> List[SiteCheckRecord]:
@@ -85,8 +113,8 @@ def _create_record_for_status_codes(
     ]
 
 
-def _create_site_check_record(status_code: int,
-                              check_time: datetime,
+def _create_site_check_record(status_code: int = 200,
+                              check_time: datetime = now,
                               response_time: int = 200) -> SiteCheckRecord:
     return SiteCheckRecord(name="test",
                            url="test",

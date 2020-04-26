@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
-from typing import List, Optional
 from functools import reduce
+from typing import List, Optional
 
 from .model import DownTime, SiteCheckRecord
 from .repository import StatusRepository
@@ -24,10 +24,11 @@ def log_metrics(site_name: str):
             connection.close()
 
     availability = calculate_availability(site_check_records)
-    avg_response_time = calculat_avg_response_time(site_check_records)
+    avg_response_time = calculate_avg_response_time(site_check_records)
     downtimes = get_down_times(site_check_records)
 
     logger.info(f"availability: {availability}")
+    logger.info(f"response_time(ms): {avg_response_time}")
 
     if downtimes:
         logger.info("site downtimes:")
@@ -42,7 +43,7 @@ def calculate_availability(
         site_check_records: List[SiteCheckRecord]) -> Optional[float]:
     logging.info("availability")
 
-    if len(site_check_records) == 0:
+    if not site_check_records:
         return None
 
     sorted_records = _sort(site_check_records)
@@ -57,8 +58,20 @@ def calculate_availability(
     return 100 - round(((downtime / check_duration.total_seconds()) * 100), 2)
 
 
-def calculat_avg_response_time(site_check_records: List[SiteCheckRecord]):
+def calculate_avg_response_time(site_check_records: List[SiteCheckRecord]):
     logging.info("response time")
+
+    def has_response_time(r: SiteCheckRecord) -> bool:
+        return r.response_time != None
+
+    response_times = list(
+        map(lambda x: x.response_time,
+            filter(has_response_time, site_check_records)))
+
+    if not response_times:
+        return None
+
+    return (reduce(lambda x, y: x + y, response_times)) / len(response_times)
 
 
 def get_down_times(

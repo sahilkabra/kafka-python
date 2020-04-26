@@ -54,7 +54,7 @@ def run(operation: str):
         signal.signal(signal.SIGINT, close(consumer))
         consumer.consume(topic, check_process)
     elif operation == "log_metrics":
-        log_metrics("pm")
+        log_metrics("google")
     else:
         logger.info("unknown operation")
         sys.exit(1)
