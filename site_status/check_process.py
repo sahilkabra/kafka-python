@@ -1,6 +1,7 @@
 import logging
 from typing import Optional
 
+from .metrics import log_metrics
 from .model import CheckEntity, CheckResponse, Site
 from .repository import StatusRepository
 
@@ -49,3 +50,5 @@ def process(response: CheckResponse):
     finally:
         if connection.closed == 0:
             connection.close()
+
+    log_metrics(response.site.name)

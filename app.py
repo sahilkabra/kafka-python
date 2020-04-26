@@ -7,9 +7,9 @@ from common.consume import Consumer
 from common.produce import Producer
 from config import kafka_config, sites_config
 from random_number import RandomNumberConsumer, RandomNumberProducer
-from site_status import check
+from site_status import check, check_process
+from site_status.metrics import log_metrics
 from site_status.model import Site
-from site_status import check_process
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -53,6 +53,8 @@ def run(operation: str):
             "Consuming site message on topic {topic}".format(topic=topic))
         signal.signal(signal.SIGINT, close(consumer))
         consumer.consume(topic, check_process)
+    elif operation == "log_metrics":
+        log_metrics("google")
     else:
         logger.info("unknown operation")
         sys.exit(1)

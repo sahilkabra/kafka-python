@@ -1,21 +1,34 @@
+from typing import List, Optional
+
 import psycopg2
-from typing import Optional
+from psycopg2.extras import RealDictCursor
 
 from config import database_config
 
-from .model import CheckEntity
+from .model import CheckEntity, SiteCheckRecord
 
 INSERT_SITE_QUERY = "insert into site(name, url, created_date) values (%s, %s, current_date)"
 INSERT_SITE_CHECK_QUERY = """insert into site_status(site_id, time, http_status_code, http_reason, response_time, created_date)
-                                values (%(site_id)s, %(time)s, %(http_status)s, %(http_reason)s, %(response_time)s, current_date)"""
+  values (%(site_id)s, %(time)s, %(http_status)s, %(http_reason)s, %(response_time)s, current_date)"""
 FIND_SITE_ID_QUERY = "select id from site where name=%s"
-FIND_SITE_CHECK_QUERY = """select id, site_id, time, http_status_code, http_reason, response_time
-                            from site_status
-                            where
-                            site_id=%s
-                            order by time desc
-                            fetch first row only
-                            """
+FIND_LATEST_SITE_CHECK_QUERY = """
+  select ss.id as id, ss.site_id as site_id, ss.time as time,
+    ss.http_status_code as status_code, ss.http_reason as http_reason,
+    ss.response_time as response_time
+  from site_status ss
+    inner join site s on s.id = ss.site_id
+  where ss.site_id=%s
+  order by s.time desc
+  fetch first row only
+"""
+FIND_SITE_CHECK_RECORDS_QUERY = """
+  select ss.id as id, ss.site_id as site_id, ss.time as time,
+    ss.http_status_code as status_code, ss.http_reason as http_reason,
+    ss.response_time as response_time, s.name as name, s.url as url
+  from site_status ss
+    inner join site s on s.id = ss.site_id
+  where s.name = %(name)s
+"""
 
 
 class StatusRepository:
@@ -61,14 +74,31 @@ class StatusRepository:
     @staticmethod
     def find_latest_site_check(connection,
                                site_id: int) -> Optional[CheckEntity]:
-        with connection.cursor() as cursor:
-            cursor.execute(FIND_SITE_CHECK_QUERY, (site_id, ))
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(FIND_LATEST_SITE_CHECK_QUERY, (site_id, ))
             row = cursor.fetchone()
 
             return None if row is None else CheckEntity(
-                id=row[0],
-                site_id=row[1],
-                check_time=row[2],
-                http_status_code=row[3],
-                http_status_reason=row[4],
-                response_time=row[5])
+                id=row["id"],
+                site_id=row["site_id"],
+                check_time=row["time"],
+                http_status_code=row["status_code"],
+                http_status_reason=row["http_reason"],
+                response_time=row["response_time"])
+
+    @staticmethod
+    def find_site_check_records(connection,
+                                name: str) -> List[SiteCheckRecord]:
+        def to_check_record(row) -> SiteCheckRecord:
+            return SiteCheckRecord(id=row["id"],
+                                   site_id=row["site_id"],
+                                   check_time=row["time"],
+                                   http_status_code=row["status_code"],
+                                   http_status_reason=row["http_reason"],
+                                   response_time=row["response_time"],
+                                   name=row["name"],
+                                   url=row["url"])
+
+        with connection.cursor(cursor_factory=RealDictCursor) as cursor:
+            cursor.execute(FIND_SITE_CHECK_RECORDS_QUERY, {"name": name})
+            return [to_check_record(row) for row in cursor.fetchall()]

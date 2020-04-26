@@ -5,13 +5,13 @@ from typing import Optional
 import jsonpickle
 
 
-@dataclass
+@dataclass(frozen=True)
 class Site:
     url: str
     name: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class CheckResponse:
     site: Site
     status_code: Optional[int]
@@ -28,7 +28,7 @@ class CheckResponse:
         return jsonpickle.decode(json)
 
 
-@dataclass
+@dataclass(frozen=True)
 class CheckEntity:
     id: Optional[int]
     site_id: int
@@ -36,3 +36,8 @@ class CheckEntity:
     http_status_code: Optional[int]
     http_status_reason: str
     response_time: Optional[int]
+
+
+@dataclass(frozen=True)
+class SiteCheckRecord(Site, CheckEntity):
+    pass
